@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -26,9 +28,23 @@ namespace sklep_api.Controllers
 
         //}
         [HttpPost]
-        public async Task<IActionResult> Post()
+        public IActionResult Post(string proc_name)
         {
-            return Ok("oks");
+            //TODO security tests
+            // TODO multithreading
+            object result;
+            var conn = new SqlConnection(connectionString);
+            var command = new SqlCommand(proc_name, conn) { CommandType = CommandType.StoredProcedure };
+
+            conn.Open();
+            result = command.ExecuteScalar();
+            //Console.WriteLine(result);
+            conn.Close();
+
+            //TODO tests
+
+            //TODO try/catch
+            return Ok(result);
         }
     }
 }
