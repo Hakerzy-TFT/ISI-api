@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace sklep_api
+namespace gamespace_api
 {
     public class Program
     {

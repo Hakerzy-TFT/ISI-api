@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace sklep_api
+namespace gamespace_api
 {
     public class Startup
     {
@@ -52,7 +52,7 @@ namespace sklep_api
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc(_appVersion, new Microsoft.OpenApi.Models.OpenApiInfo { Title = "sklep-api", Version = _appVersion });
+                c.SwaggerDoc(_appVersion, new Microsoft.OpenApi.Models.OpenApiInfo { Title = "gamespace-api", Version = _appVersion });
             });
 
             //todo configure CORS policy 

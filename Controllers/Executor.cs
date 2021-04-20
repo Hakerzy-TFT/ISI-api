@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace sklep_api.Controllers
+namespace gamespace_api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
