@@ -96,9 +96,6 @@ namespace gamespace_api.Controllers
                 {
                     _context.EndUsers.Add(endUser);
                     await _context.SaveChangesAsync();
-
-
-
                     return CreatedAtAction("GetEndUser", new { id = endUser.Id }, endUser);
                 }
                 
