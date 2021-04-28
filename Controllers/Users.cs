@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using gamespace_api.Models;
+using Microsoft.Data.SqlClient;
+using Dapper;
+using Microsoft.IdentityModel.Protocols;
 
 namespace gamespace_api.Controllers
 {
@@ -77,10 +80,32 @@ namespace gamespace_api.Controllers
         [HttpPost]
         public async Task<ActionResult<EndUser>> PostEndUser(EndUser endUser)
         {
-            _context.EndUsers.Add(endUser);
-            await _context.SaveChangesAsync();
+            string sql = "EXEC   gs_get_user_by_email @email= '" + endUser.Email + "'";
+            
 
-            return CreatedAtAction("GetEndUser", new { id = endUser.Id }, endUser);
+            using (SqlConnection connection = new SqlConnection(_context.Database.GetConnectionString()))
+            {
+                var result = connection.Query<string>(sql);
+                Console.WriteLine("hehehe");
+                if (result.Any())
+                {
+                    Console.WriteLine(result.First());
+                    return BadRequest("{\"result\" : \"user already exists!\"}");
+                }
+                else
+                {
+                    _context.EndUsers.Add(endUser);
+                    await _context.SaveChangesAsync();
+
+
+
+                    return CreatedAtAction("GetEndUser", new { id = endUser.Id }, endUser);
+                }
+                
+                
+            }
+
+            
         }
 
         // DELETE: api/Users/5
