@@ -46,7 +46,7 @@ namespace gamespace_api.Controllers
         }
 
         [HttpGet("byemail/{email}")]
-        public async Task<ActionResult<EndUser>> GetEndUser(string email)
+        public ActionResult<EndUser> GetEndUser(string email)
         {
             if (email is null)
             {
@@ -56,7 +56,7 @@ namespace gamespace_api.Controllers
             string sql = "EXEC gs_get_user_by_email @email= '" + email + "'";
 
 
-            using (SqlConnection connection = new SqlConnection(_context.Database.GetConnectionString()))
+            using (SqlConnection connection = new(_context.Database.GetConnectionString()))
             {
                 var result = connection.Query<string>(sql);
 
