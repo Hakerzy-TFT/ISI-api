@@ -9,6 +9,7 @@ using gamespace_api.Models;
 using Microsoft.Data.SqlClient;
 using Dapper;
 using Microsoft.IdentityModel.Protocols;
+using HakerzyLib.core;
 
 namespace gamespace_api.Controllers
 {
@@ -42,6 +43,32 @@ namespace gamespace_api.Controllers
             }
 
             return endUser;
+        }
+
+        [HttpGet("byemail/{email}")]
+        public async Task<ActionResult<EndUser>> GetEndUser(string email)
+        {
+            if (email is null)
+            {
+                return BadRequest(Message.ToJson("Empty parameter!"));
+            }
+
+            string sql = "EXEC gs_get_user_by_email @email= '" + email + "'";
+
+
+            using (SqlConnection connection = new SqlConnection(_context.Database.GetConnectionString()))
+            {
+                var result = connection.Query<string>(sql);
+
+                if (result.Any())
+                {
+                    return Ok(result.First().ToString());
+                }
+                else
+                {
+                    return BadRequest(Message.ToJson("user not found!"));
+                }
+            }
         }
 
         // PUT: api/Users/5
@@ -81,7 +108,7 @@ namespace gamespace_api.Controllers
         public async Task<ActionResult<EndUser>> PostEndUser(EndUser endUser)
         {
             string sql = "EXEC   gs_get_user_by_email @email= '" + endUser.Email + "'";
-            
+
 
             using (SqlConnection connection = new SqlConnection(_context.Database.GetConnectionString()))
             {
@@ -98,11 +125,9 @@ namespace gamespace_api.Controllers
                     await _context.SaveChangesAsync();
                     return CreatedAtAction("GetEndUser", new { id = endUser.Id }, endUser);
                 }
-                
-                
+
             }
 
-            
         }
 
         // DELETE: api/Users/5
