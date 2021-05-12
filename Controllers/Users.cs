@@ -113,7 +113,6 @@ namespace gamespace_api.Controllers
             using (SqlConnection connection = new SqlConnection(_context.Database.GetConnectionString()))
             {
                 var result = connection.Query<string>(sql);
-                Console.WriteLine("hehehe");
                 if (result.Any())
                 {
                     Console.WriteLine(result.First());
