@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using gamespace_api.Models;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -11,7 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace sklep_api
+namespace gamespace_api
 {
     public class Startup
     {
@@ -49,10 +51,10 @@ namespace sklep_api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-
+            services.AddDbContext<alvorContext>(options => options.UseSqlServer(Configuration.GetConnectionString("alvor")));
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc(_appVersion, new Microsoft.OpenApi.Models.OpenApiInfo { Title = "sklep-api", Version = _appVersion });
+                c.SwaggerDoc(_appVersion, new Microsoft.OpenApi.Models.OpenApiInfo { Title = "gamespace-api", Version = _appVersion });
             });
 
             //todo configure CORS policy 
