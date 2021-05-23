@@ -19,13 +19,16 @@ namespace gamespace_api.Models
 
         public virtual DbSet<Bug> Bugs { get; set; }
         public virtual DbSet<EndUser> EndUsers { get; set; }
+        public virtual DbSet<EndUserSecurity> EndUserSecurities { get; set; }
         public virtual DbSet<Game> Games { get; set; }
+        public virtual DbSet<GamePage> GamePages { get; set; }
         public virtual DbSet<GameReview> GameReviews { get; set; }
         public virtual DbSet<GameUser> GameUsers { get; set; }
         public virtual DbSet<Log> Logs { get; set; }
         public virtual DbSet<Review> Reviews { get; set; }
         public virtual DbSet<ServiceStatus> ServiceStatuses { get; set; }
         public virtual DbSet<Status> Statuses { get; set; }
+        public virtual DbSet<Studio> Studios { get; set; }
         public virtual DbSet<Test> Tests { get; set; }
         public virtual DbSet<UserType> UserTypes { get; set; }
         public virtual DbSet<Util> Utils { get; set; }
@@ -34,7 +37,8 @@ namespace gamespace_api.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseSqlServer("Server=melodeon.ckiahzuejgcx.eu-central-1.rds.amazonaws.com;Database=alvor;User Id=admin;Password=...optimusPrime123;");
             }
         }
 
@@ -64,6 +68,9 @@ namespace gamespace_api.Models
             {
                 entity.ToTable("end_user");
 
+                entity.HasIndex(e => e.Email, "UQ__end_user__AB6E6164DEAD03A9")
+                    .IsUnique();
+
                 entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.DateOfBirth).HasColumnName("date_of_birth");
@@ -78,11 +85,6 @@ namespace gamespace_api.Models
                     .IsUnicode(false)
                     .HasColumnName("name");
 
-                entity.Property(e => e.Password)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("password");
-
                 entity.Property(e => e.Surname)
                     .HasMaxLength(100)
                     .IsUnicode(false)
@@ -93,12 +95,33 @@ namespace gamespace_api.Models
                 entity.HasOne(d => d.UserType)
                     .WithMany(p => p.EndUsers)
                     .HasForeignKey(d => d.UserTypeId)
-                    .HasConstraintName("FK__end_user__user_t__607251E5");
+                    .HasConstraintName("FK__end_user__user_t__50C5FA01");
+            });
+
+            modelBuilder.Entity<EndUserSecurity>(entity =>
+            {
+                entity.ToTable("end_user_security");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.EndUserId).HasColumnName("end_user_id");
+
+                entity.Property(e => e.HashedPassword).HasColumnName("hashed_password");
+
+                entity.Property(e => e.Salt).HasColumnName("salt");
+
+                entity.HasOne(d => d.EndUser)
+                    .WithMany(p => p.EndUserSecurities)
+                    .HasForeignKey(d => d.EndUserId)
+                    .HasConstraintName("FK__end_user___end_u__7BB05806");
             });
 
             modelBuilder.Entity<Game>(entity =>
             {
                 entity.ToTable("game");
+
+                entity.HasIndex(e => e.Title, "UQ__game__E52A1BB367DBB761")
+                    .IsUnique();
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -106,19 +129,37 @@ namespace gamespace_api.Models
                     .IsUnicode(false)
                     .HasColumnName("description");
 
+                entity.Property(e => e.PostedDate).HasColumnName("posted_date");
+
                 entity.Property(e => e.ReleaseDate).HasColumnName("release_date");
 
-                entity.Property(e => e.Status).HasColumnName("status");
+                entity.Property(e => e.StatusId).HasColumnName("status_id");
 
                 entity.Property(e => e.Title)
                     .HasMaxLength(255)
                     .IsUnicode(false)
                     .HasColumnName("title");
 
-                entity.HasOne(d => d.StatusNavigation)
+                entity.HasOne(d => d.Status)
                     .WithMany(p => p.Games)
-                    .HasForeignKey(d => d.Status)
-                    .HasConstraintName("FK__game__status__65370702");
+                    .HasForeignKey(d => d.StatusId)
+                    .HasConstraintName("FK__game__status_id__5B438874");
+            });
+
+            modelBuilder.Entity<GamePage>(entity =>
+            {
+                entity.ToTable("game_page");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.BackgroundColor)
+                    .HasMaxLength(7)
+                    .IsUnicode(false)
+                    .HasColumnName("background_color");
+
+                entity.Property(e => e.BackgroundImage)
+                    .IsUnicode(false)
+                    .HasColumnName("background_image");
             });
 
             modelBuilder.Entity<GameReview>(entity =>
@@ -134,12 +175,12 @@ namespace gamespace_api.Models
                 entity.HasOne(d => d.Game)
                     .WithMany(p => p.GameReviews)
                     .HasForeignKey(d => d.GameId)
-                    .HasConstraintName("FK__game_revi__game___6EC0713C");
+                    .HasConstraintName("FK__game_revi__game___64CCF2AE");
 
                 entity.HasOne(d => d.Review)
                     .WithMany(p => p.GameReviews)
                     .HasForeignKey(d => d.ReviewId)
-                    .HasConstraintName("FK__game_revi__revie__6FB49575");
+                    .HasConstraintName("FK__game_revi__revie__65C116E7");
             });
 
             modelBuilder.Entity<GameUser>(entity =>
@@ -153,7 +194,7 @@ namespace gamespace_api.Models
                 entity.HasOne(d => d.EndUser)
                     .WithMany(p => p.GameUsers)
                     .HasForeignKey(d => d.EndUserId)
-                    .HasConstraintName("FK__game_user__end_u__681373AD");
+                    .HasConstraintName("FK__game_user__end_u__5E1FF51F");
             });
 
             modelBuilder.Entity<Log>(entity =>
@@ -190,12 +231,12 @@ namespace gamespace_api.Models
                 entity.HasOne(d => d.EndUser)
                     .WithMany(p => p.Reviews)
                     .HasForeignKey(d => d.EndUserId)
-                    .HasConstraintName("FK__review__end_user__6AEFE058");
+                    .HasConstraintName("FK__review__end_user__60FC61CA");
 
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.Reviews)
                     .HasForeignKey(d => d.StatusId)
-                    .HasConstraintName("FK__review__status_i__6BE40491");
+                    .HasConstraintName("FK__review__status_i__61F08603");
             });
 
             modelBuilder.Entity<ServiceStatus>(entity =>
@@ -221,6 +262,25 @@ namespace gamespace_api.Models
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("name");
+            });
+
+            modelBuilder.Entity<Studio>(entity =>
+            {
+                entity.ToTable("studio");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.EndUserId).HasColumnName("end_user_id");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("name");
+
+                entity.HasOne(d => d.EndUser)
+                    .WithMany(p => p.Studios)
+                    .HasForeignKey(d => d.EndUserId)
+                    .HasConstraintName("FK__studio__end_user__558AAF1E");
             });
 
             modelBuilder.Entity<Test>(entity =>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿  
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,6 +11,12 @@ using Microsoft.Data.SqlClient;
 using Dapper;
 using Microsoft.IdentityModel.Protocols;
 using HakerzyLib.core;
+using gamespace_api.Models.DataTransfer;
+using HakerzyLib.Security;
+using Newtonsoft.Json;
+using System.Threading;
+using Microsoft.Extensions.Configuration;
+using gamespace_api.Authentication;
 
 namespace gamespace_api.Controllers
 {
@@ -18,9 +25,11 @@ namespace gamespace_api.Controllers
     public class Users : ControllerBase
     {
         private readonly alvorContext _context;
+        private readonly IConfiguration _configuration;
 
-        public Users(alvorContext context)
+        public Users(alvorContext context, IConfiguration configuration)
         {
+            _configuration = configuration;
             _context = context;
         }
 
@@ -105,26 +114,60 @@ namespace gamespace_api.Controllers
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<EndUser>> PostEndUser(EndUser endUser)
+        public async Task<ActionResult<EndUser>> PostEndUser(UserRegister userRegister)
         {
-            string sql = "EXEC   gs_get_user_by_email @email= '" + endUser.Email + "'";
-
-
-            using (SqlConnection connection = new SqlConnection(_context.Database.GetConnectionString()))
+            string sql = "EXEC   gs_get_user_by_email @email= '" + userRegister.Email + "'";
+            try
             {
-                var result = connection.Query<string>(sql);
-                if (result.Any())
+                using (SqlConnection connection = new SqlConnection(_context.Database.GetConnectionString()))
                 {
-                    Console.WriteLine(result.First());
-                    return BadRequest("{\"result\" : \"user already exists!\"}");
-                }
-                else
-                {
-                    _context.EndUsers.Add(endUser);
-                    await _context.SaveChangesAsync();
-                    return CreatedAtAction("GetEndUser", new { id = endUser.Id }, endUser);
-                }
+                    var result = connection.Query<string>(sql);
+                    //Console.WriteLine(result.First());
+                    if (result.Any())
+                    {
+                        //Console.WriteLine(result.First());
+                        return BadRequest("{\"result\" : \"user already exists!\"}");
+                    }
 
+                    else
+                    {
+                        //Console.WriteLine(result.First());
+                        var user = new EndUser
+                        {
+                            Email = userRegister.Email,
+                            Name = userRegister.Name,
+                            Surname = userRegister.Surname,
+                            UserTypeId = userRegister.UserTypeId
+                        };
+                        _context.EndUsers.Add(user);
+                        await _context.SaveChangesAsync();
+
+                        var passwordManager = new PasswordManager();
+                        var salt = passwordManager.GenerateSaltForPassowrd();
+                        byte[] hashed = passwordManager.ComputePasswordHash(userRegister.Password, salt);
+
+                        var res2 = connection.Query<string>(sql);
+                        var userData = JsonConvert.DeserializeObject<List<EndUser>>(res2.First());
+                        Console.WriteLine(userData.First().Id);
+
+                        _context.EndUserSecurities.Add(new EndUserSecurity
+                        {
+                            Salt = salt,
+                            HashedPassword = hashed,
+                            EndUserId = userData.First().Id
+
+                        }
+                        );
+                        await _context.SaveChangesAsync();
+                    }
+                    return Ok(Message.ToJson("User is created"));
+                }
+            }
+
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return BadRequest("error");
             }
 
         }
@@ -148,6 +191,43 @@ namespace gamespace_api.Controllers
         private bool EndUserExists(int id)
         {
             return _context.EndUsers.Any(e => e.Id == id);
+        }
+
+        [HttpPost]
+        [Route("login")]
+        public ActionResult<string> Login([FromBody] UserAuth request)
+        {
+            // find user
+            // check password
+            // send jwt access token
+
+            var user = _context.EndUsers.FirstOrDefault(u => u.Email == request.UserMail);
+
+            if (user == null)
+            {
+                //logger error
+                return BadRequest(Message.ToJson("user doesnt exist!"));
+            }
+
+            EndUserSecurity userSecurities = _context.EndUserSecurities.FirstOrDefault(s => s.EndUserId == user.Id);
+
+            if (userSecurities == null)
+            {
+                //logger error
+                return BadRequest(Message.ToJson("user securities doesnt exist!"));
+            }
+
+            PasswordManager pm = new();
+
+            if (pm.IsPassowrdValid(request.Password, (int)userSecurities.Salt, userSecurities.HashedPassword) == false)
+            {
+                //logger error
+                return BadRequest(Message.ToJson("Bad password"));
+            }
+
+            var token = AuthenticationService.GenerateJwtToken(user, _configuration);
+
+            return Ok(token);
         }
     }
 }
