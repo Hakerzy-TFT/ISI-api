@@ -35,11 +35,7 @@ namespace gamespace_api.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Server=melodeon.ckiahzuejgcx.eu-central-1.rds.amazonaws.com;Database=alvor;User Id=admin;Password=...optimusPrime123;");
-            }
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -107,13 +103,14 @@ namespace gamespace_api.Models
                 entity.Property(e => e.EndUserId).HasColumnName("end_user_id");
 
                 entity.Property(e => e.HashedPassword).HasColumnName("hashed_password");
-
+                
                 entity.Property(e => e.Salt).HasColumnName("salt");
 
                 entity.HasOne(d => d.EndUser)
                     .WithMany(p => p.EndUserSecurities)
                     .HasForeignKey(d => d.EndUserId)
                     .HasConstraintName("FK__end_user___end_u__7BB05806");
+
             });
 
             modelBuilder.Entity<Game>(entity =>

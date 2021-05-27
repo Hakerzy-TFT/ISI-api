@@ -11,7 +11,6 @@ namespace gamespace_api.Models
         public int? Salt { get; set; }
         public byte[] HashedPassword { get; set; }
         public int? EndUserId { get; set; }
-
         public virtual EndUser EndUser { get; set; }
     }
 }

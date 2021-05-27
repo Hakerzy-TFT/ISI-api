@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="C:\Users\piotr\source\repos\HakerzyLib\HakerzyLib.csproj" />
+    <ProjectReference Include="..\HakerzyLib\HakerzyLib.csproj" />
   </ItemGroup>
 
 
