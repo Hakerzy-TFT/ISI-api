@@ -35,9 +35,7 @@ namespace gamespace_api.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-            }
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -104,17 +102,15 @@ namespace gamespace_api.Models
 
                 entity.Property(e => e.EndUserId).HasColumnName("end_user_id");
 
-                entity.Property(e => e.HashedPassword)
-                    .HasMaxLength(255)
-                    .IsUnicode(false)
-                    .HasColumnName("hashed_password");
-
+                entity.Property(e => e.HashedPassword).HasColumnName("hashed_password");
+                
                 entity.Property(e => e.Salt).HasColumnName("salt");
 
                 entity.HasOne(d => d.EndUser)
                     .WithMany(p => p.EndUserSecurities)
                     .HasForeignKey(d => d.EndUserId)
-                    .HasConstraintName("FK__end_user___end_u__6C6E1476");
+                    .HasConstraintName("FK__end_user___end_u__7BB05806");
+
             });
 
             modelBuilder.Entity<Game>(entity =>

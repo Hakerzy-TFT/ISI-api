@@ -9,9 +9,8 @@ namespace gamespace_api.Models
     {
         public int Id { get; set; }
         public int? Salt { get; set; }
-        public string HashedPassword { get; set; }
+        public byte[] HashedPassword { get; set; }
         public int? EndUserId { get; set; }
-
         public virtual EndUser EndUser { get; set; }
     }
 }
