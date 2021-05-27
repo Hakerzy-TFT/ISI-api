@@ -32,7 +32,7 @@ namespace gamespace_api
             _activeDatabase = configuration["Setup:ActiveDatabase"];
             _httpsRedirect = bool.Parse(configuration["Setup:HttpsRedirect"]);
             _useLocalhost = bool.Parse(configuration["Setup:UseLocalhost"]);
-
+           
             /*
              * Przyk³ad appsettings.json
              * ...
@@ -58,7 +58,6 @@ namespace gamespace_api
             {
                 c.SwaggerDoc(_appVersion, new Microsoft.OpenApi.Models.OpenApiInfo { Title = "gamespace-api", Version = _appVersion });
             });
-
             //todo configure CORS policy 
         }
 
