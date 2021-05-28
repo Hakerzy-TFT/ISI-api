@@ -18,6 +18,8 @@ namespace gamespace_api
             var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
             try
             {
+                
+
                 Console.WriteLine("API online ..");
                 logger.Debug("XD");
                 CreateHostBuilder(args).Build().Run();
@@ -28,7 +30,7 @@ namespace gamespace_api
             }
             finally
             {
-                NLog.LogManager.Shutdown();
+                LogManager.Shutdown();
             }
 
         }
@@ -37,7 +39,12 @@ namespace gamespace_api
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    var config = new ConfigurationBuilder()
+                    .AddJsonFile("appsettings.json", optional: false)
+                    .Build();
+
                     webBuilder.UseStartup<Startup>();
+                    webBuilder.UseUrls($"{config.GetSection("UrlAdress").Value}:{config.GetSection("Port").Value}");
                 })
              .ConfigureLogging((hostingContext, logging) => {
                  logging.AddNLog(hostingContext.Configuration.GetSection("Logging"));
