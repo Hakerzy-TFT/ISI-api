@@ -20,7 +20,7 @@ namespace gamespace_api.Models
         public string Name { get; set; }
         public string Surname { get; set; }
         public DateTime? DateOfBirth { get; set; }
-        public int? UserTypeId { get; set; }
+        public int UserTypeId { get; set; }
 
         public virtual UserType UserType { get; set; }
         public virtual ICollection<EndUserSecurity> EndUserSecurities { get; set; }
