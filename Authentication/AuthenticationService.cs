@@ -26,7 +26,6 @@ namespace gamespace_api.Authentication
                 new Claim(HakerzyLib.Security.JwtClaimTypes.utype, user.UserTypeId == 0 ? "admin" : "user" )
             };
             Console.WriteLine(configuration["jwt:Secret"]);
-
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["jwt:Secret"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var expires = DateTime.Now.AddDays(Convert.ToDouble(configuration["jwt:ExpireDays"]));
