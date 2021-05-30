@@ -35,9 +35,7 @@ namespace gamespace_api.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-            }
+            
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -53,10 +51,12 @@ namespace gamespace_api.Models
                 entity.Property(e => e.DateOfCreation).HasColumnName("date_of_creation");
 
                 entity.Property(e => e.Description)
+                    .IsRequired()
                     .IsUnicode(false)
                     .HasColumnName("description");
 
                 entity.Property(e => e.Title)
+                    .IsRequired()
                     .HasMaxLength(255)
                     .IsUnicode(false)
                     .HasColumnName("title");
@@ -66,7 +66,7 @@ namespace gamespace_api.Models
             {
                 entity.ToTable("end_user");
 
-                entity.HasIndex(e => e.Email, "UQ__end_user__AB6E6164DEAD03A9")
+                entity.HasIndex(e => e.Email, "UQ__end_user__AB6E616412A684D7")
                     .IsUnique();
 
                 entity.Property(e => e.Id).HasColumnName("id");
@@ -74,16 +74,19 @@ namespace gamespace_api.Models
                 entity.Property(e => e.DateOfBirth).HasColumnName("date_of_birth");
 
                 entity.Property(e => e.Email)
+                    .IsRequired()
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("email");
 
                 entity.Property(e => e.Name)
+                    .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false)
                     .HasColumnName("name");
 
                 entity.Property(e => e.Surname)
+                    .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false)
                     .HasColumnName("surname");
@@ -93,7 +96,8 @@ namespace gamespace_api.Models
                 entity.HasOne(d => d.UserType)
                     .WithMany(p => p.EndUsers)
                     .HasForeignKey(d => d.UserTypeId)
-                    .HasConstraintName("FK__end_user__user_t__50C5FA01");
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__end_user__user_t__24B26D99");
             });
 
             modelBuilder.Entity<EndUserSecurity>(entity =>
@@ -105,6 +109,7 @@ namespace gamespace_api.Models
                 entity.Property(e => e.EndUserId).HasColumnName("end_user_id");
 
                 entity.Property(e => e.HashedPassword)
+                    .IsRequired()
                     .HasMaxLength(255)
                     .IsUnicode(false)
                     .HasColumnName("hashed_password");
@@ -114,19 +119,21 @@ namespace gamespace_api.Models
                 entity.HasOne(d => d.EndUser)
                     .WithMany(p => p.EndUserSecurities)
                     .HasForeignKey(d => d.EndUserId)
-                    .HasConstraintName("FK__end_user___end_u__6C6E1476");
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__end_user___end_u__3D7E1B63");
             });
 
             modelBuilder.Entity<Game>(entity =>
             {
                 entity.ToTable("game");
 
-                entity.HasIndex(e => e.Title, "UQ__game__E52A1BB367DBB761")
+                entity.HasIndex(e => e.Title, "UQ__game__E52A1BB34674D9F4")
                     .IsUnique();
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.Description)
+                    .IsRequired()
                     .IsUnicode(false)
                     .HasColumnName("description");
 
@@ -137,6 +144,7 @@ namespace gamespace_api.Models
                 entity.Property(e => e.StatusId).HasColumnName("status_id");
 
                 entity.Property(e => e.Title)
+                    .IsRequired()
                     .HasMaxLength(255)
                     .IsUnicode(false)
                     .HasColumnName("title");
@@ -144,7 +152,8 @@ namespace gamespace_api.Models
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.Games)
                     .HasForeignKey(d => d.StatusId)
-                    .HasConstraintName("FK__game__status_id__5B438874");
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__game__status_id__2F2FFC0C");
             });
 
             modelBuilder.Entity<GamePage>(entity =>
@@ -154,11 +163,13 @@ namespace gamespace_api.Models
                 entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.BackgroundColor)
+                    .IsRequired()
                     .HasMaxLength(7)
                     .IsUnicode(false)
                     .HasColumnName("background_color");
 
                 entity.Property(e => e.BackgroundImage)
+                    .IsRequired()
                     .IsUnicode(false)
                     .HasColumnName("background_image");
             });
@@ -176,12 +187,14 @@ namespace gamespace_api.Models
                 entity.HasOne(d => d.Game)
                     .WithMany(p => p.GameReviews)
                     .HasForeignKey(d => d.GameId)
-                    .HasConstraintName("FK__game_revi__game___64CCF2AE");
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__game_revi__game___39AD8A7F");
 
                 entity.HasOne(d => d.Review)
                     .WithMany(p => p.GameReviews)
                     .HasForeignKey(d => d.ReviewId)
-                    .HasConstraintName("FK__game_revi__revie__65C116E7");
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__game_revi__revie__3AA1AEB8");
             });
 
             modelBuilder.Entity<GameUser>(entity =>
@@ -192,10 +205,19 @@ namespace gamespace_api.Models
 
                 entity.Property(e => e.EndUserId).HasColumnName("end_user_id");
 
+                entity.Property(e => e.GameId).HasColumnName("game_id");
+
                 entity.HasOne(d => d.EndUser)
                     .WithMany(p => p.GameUsers)
                     .HasForeignKey(d => d.EndUserId)
-                    .HasConstraintName("FK__game_user__end_u__5E1FF51F");
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__game_user__end_u__33008CF0");
+
+                entity.HasOne(d => d.Game)
+                    .WithMany(p => p.GameUsers)
+                    .HasForeignKey(d => d.GameId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__game_user__game___320C68B7");
             });
 
             modelBuilder.Entity<Log>(entity =>
@@ -232,12 +254,14 @@ namespace gamespace_api.Models
                 entity.HasOne(d => d.EndUser)
                     .WithMany(p => p.Reviews)
                     .HasForeignKey(d => d.EndUserId)
-                    .HasConstraintName("FK__review__end_user__60FC61CA");
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__review__end_user__35DCF99B");
 
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.Reviews)
                     .HasForeignKey(d => d.StatusId)
-                    .HasConstraintName("FK__review__status_i__61F08603");
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__review__status_i__36D11DD4");
             });
 
             modelBuilder.Entity<ServiceStatus>(entity =>
@@ -260,6 +284,7 @@ namespace gamespace_api.Models
                 entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.Name)
+                    .IsRequired()
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("name");
@@ -271,17 +296,28 @@ namespace gamespace_api.Models
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
+                entity.Property(e => e.Description)
+                    .IsRequired()
+                    .IsUnicode(false)
+                    .HasColumnName("description");
+
                 entity.Property(e => e.EndUserId).HasColumnName("end_user_id");
 
                 entity.Property(e => e.Name)
+                    .IsRequired()
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("name");
 
+                entity.Property(e => e.Owner)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("owner");
+
                 entity.HasOne(d => d.EndUser)
                     .WithMany(p => p.Studios)
                     .HasForeignKey(d => d.EndUserId)
-                    .HasConstraintName("FK__studio__end_user__558AAF1E");
+                    .HasConstraintName("FK__studio__end_user__297722B6");
             });
 
             modelBuilder.Entity<Test>(entity =>
@@ -300,6 +336,7 @@ namespace gamespace_api.Models
                 entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.Name)
+                    .IsRequired()
                     .HasMaxLength(30)
                     .IsUnicode(false)
                     .HasColumnName("name");

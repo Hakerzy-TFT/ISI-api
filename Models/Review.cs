@@ -13,10 +13,10 @@ namespace gamespace_api.Models
         }
 
         public int Id { get; set; }
-        public int? Rating { get; set; }
+        public int Rating { get; set; }
         public string ReviewContent { get; set; }
-        public int? EndUserId { get; set; }
-        public int? StatusId { get; set; }
+        public int EndUserId { get; set; }
+        public int StatusId { get; set; }
 
         public virtual EndUser EndUser { get; set; }
         public virtual Status Status { get; set; }

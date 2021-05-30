@@ -9,6 +9,8 @@ namespace gamespace_api.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public string Description { get; set; }
+        public string Owner { get; set; }
         public int? EndUserId { get; set; }
 
         public virtual EndUser EndUser { get; set; }

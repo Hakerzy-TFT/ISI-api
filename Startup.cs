@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +32,7 @@ namespace gamespace_api
             _activeDatabase = configuration["Setup:ActiveDatabase"];
             _httpsRedirect = bool.Parse(configuration["Setup:HttpsRedirect"]);
             _useLocalhost = bool.Parse(configuration["Setup:UseLocalhost"]);
-
+           
             /*
              * Przyk³ad appsettings.json
              * ...
@@ -50,13 +51,13 @@ namespace gamespace_api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            IdentityModelEventSource.ShowPII = true;
             services.AddControllers();
             services.AddDbContext<alvorContext>(options => options.UseSqlServer(Configuration.GetConnectionString("alvor")));
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc(_appVersion, new Microsoft.OpenApi.Models.OpenApiInfo { Title = "gamespace-api", Version = _appVersion });
             });
-
             //todo configure CORS policy 
         }
 
