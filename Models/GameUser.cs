@@ -8,8 +8,10 @@ namespace gamespace_api.Models
     public partial class GameUser
     {
         public int Id { get; set; }
-        public int? EndUserId { get; set; }
+        public int GameId { get; set; }
+        public int EndUserId { get; set; }
 
         public virtual EndUser EndUser { get; set; }
+        public virtual Game Game { get; set; }
     }
 }

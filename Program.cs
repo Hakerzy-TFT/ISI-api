@@ -18,10 +18,7 @@ namespace gamespace_api
             var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
             try
             {
-                
-
                 Console.WriteLine("API online ..");
-                logger.Debug("XD");
                 CreateHostBuilder(args).Build().Run();
             } catch (Exception e)
             {
@@ -32,7 +29,6 @@ namespace gamespace_api
             {
                 LogManager.Shutdown();
             }
-
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
