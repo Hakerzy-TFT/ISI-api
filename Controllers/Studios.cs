@@ -6,6 +6,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using gamespace_api.Models;
+using gamespace_api.Models.DataTransfer;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Data.SqlClient;
+using Dapper;
+using HakerzyLib.core;
 
 namespace gamespace_api.Controllers
 {
@@ -14,9 +20,13 @@ namespace gamespace_api.Controllers
     public class Studios : ControllerBase
     {
         private readonly alvorContext _context;
+        private readonly IConfiguration _configuration;
+        private readonly ILogger<Users> _logger;
 
-        public Studios(alvorContext context)
+        public Studios(alvorContext context, IConfiguration configuration, ILogger<Users> logger)
         {
+            _configuration = configuration;
+            _logger = logger;
             _context = context;
         }
 
@@ -75,12 +85,41 @@ namespace gamespace_api.Controllers
         // POST: api/Studios
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Studio>> PostStudio(Studio studio)
+        public async Task<ActionResult<Studio>> PostStudio(StudioRegister studioObj)
         {
-            _context.Studios.Add(studio);
-            await _context.SaveChangesAsync();
+            try
+            {
+                string sql = "EXEC gs_get_studio_by_name @studio_name='" + studioObj.Name + "'";
+                using(SqlConnection conn = new(_context.Database.GetConnectionString()))
+                {
+                    var res = conn.Query<string>(sql);
 
-            return CreatedAtAction("GetStudio", new { id = studio.Id }, studio);
+                    if (res.Any())
+                    {
+                        return BadRequest("{\"result\" : \"studio with that name already exists!\"}");
+                    }
+                    else
+                    {
+                        var studio = new Studio
+                        {
+                            Name = studioObj.Name,
+                            Description = studioObj.Description,
+                            Owner = studioObj.OwnerName
+                        };
+                        _context.Studios.Add(studio);
+                        await _context.SaveChangesAsync();
+                    }
+                    return Ok(Message.ToJson("Studio created"));
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.Log(LogLevel.Error, $"Exception thrown in runtiome - {e.Message}");
+                throw;
+            }
+            
+        
+            
         }
 
         // DELETE: api/Studios/5
