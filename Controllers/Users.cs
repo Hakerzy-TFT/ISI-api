@@ -190,7 +190,6 @@ namespace gamespace_api.Controllers
                             Salt = salt,
                             HashedPassword = hashed,
                             EndUserId = userData.First().Id
-
                         }
                         );
                         await _context.SaveChangesAsync();

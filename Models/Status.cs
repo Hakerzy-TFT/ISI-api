@@ -9,6 +9,7 @@ namespace gamespace_api.Models
     {
         public Status()
         {
+            Bugs = new HashSet<Bug>();
             Games = new HashSet<Game>();
             Reviews = new HashSet<Review>();
         }
@@ -16,6 +17,7 @@ namespace gamespace_api.Models
         public int Id { get; set; }
         public string Name { get; set; }
 
+        public virtual ICollection<Bug> Bugs { get; set; }
         public virtual ICollection<Game> Games { get; set; }
         public virtual ICollection<Review> Reviews { get; set; }
     }

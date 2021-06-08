@@ -22,7 +22,9 @@ namespace gamespace_api.Models
         public virtual DbSet<EndUserSecurity> EndUserSecurities { get; set; }
         public virtual DbSet<Game> Games { get; set; }
         public virtual DbSet<GamePage> GamePages { get; set; }
+        public virtual DbSet<GamePlatform> GamePlatforms { get; set; }
         public virtual DbSet<GameReview> GameReviews { get; set; }
+        public virtual DbSet<GameType> GameTypes { get; set; }
         public virtual DbSet<GameUser> GameUsers { get; set; }
         public virtual DbSet<Log> Logs { get; set; }
         public virtual DbSet<Review> Reviews { get; set; }
@@ -35,7 +37,6 @@ namespace gamespace_api.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -55,18 +56,37 @@ namespace gamespace_api.Models
                     .IsUnicode(false)
                     .HasColumnName("description");
 
+                entity.Property(e => e.EndUserId).HasColumnName("end_user_id");
+
+                entity.Property(e => e.StatusId).HasColumnName("status_id");
+
                 entity.Property(e => e.Title)
                     .IsRequired()
                     .HasMaxLength(255)
                     .IsUnicode(false)
                     .HasColumnName("title");
+
+                entity.HasOne(d => d.EndUser)
+                    .WithMany(p => p.Bugs)
+                    .HasForeignKey(d => d.EndUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__bug__end_user_id__0CA5D9DE");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.Bugs)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__bug__status_id__0D99FE17");
             });
 
             modelBuilder.Entity<EndUser>(entity =>
             {
                 entity.ToTable("end_user");
 
-                entity.HasIndex(e => e.Email, "UQ__end_user__AB6E616412A684D7")
+                entity.HasIndex(e => e.Email, "UQ__end_user__AB6E61649325D20D")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.Username, "UQ__end_user__F3DBC57259588925")
                     .IsUnique();
 
                 entity.Property(e => e.Id).HasColumnName("id");
@@ -80,24 +100,35 @@ namespace gamespace_api.Models
                     .HasColumnName("email");
 
                 entity.Property(e => e.Name)
-                    .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false)
                     .HasColumnName("name");
 
+                entity.Property(e => e.PhoneNumber)
+                    .HasMaxLength(20)
+                    .IsUnicode(false)
+                    .HasColumnName("phone_number");
+
                 entity.Property(e => e.Surname)
-                    .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false)
                     .HasColumnName("surname");
 
                 entity.Property(e => e.UserTypeId).HasColumnName("user_type_id");
 
+                entity.Property(e => e.Username)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("username");
+
+                entity.Property(e => e.Wallet).HasColumnName("wallet");
+
                 entity.HasOne(d => d.UserType)
                     .WithMany(p => p.EndUsers)
                     .HasForeignKey(d => d.UserTypeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__end_user__user_t__24B26D99");
+                    .HasConstraintName("FK__end_user__user_t__07E124C1");
             });
 
             modelBuilder.Entity<EndUserSecurity>(entity =>
@@ -120,22 +151,32 @@ namespace gamespace_api.Models
                     .WithMany(p => p.EndUserSecurities)
                     .HasForeignKey(d => d.EndUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__end_user___end_u__3D7E1B63");
+                    .HasConstraintName("FK__end_user___end_u__2665ABE1");
             });
 
             modelBuilder.Entity<Game>(entity =>
             {
                 entity.ToTable("game");
 
-                entity.HasIndex(e => e.Title, "UQ__game__E52A1BB34674D9F4")
+                entity.HasIndex(e => e.Title, "UQ__game__E52A1BB3F70DC27F")
                     .IsUnique();
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.Description)
-                    .IsRequired()
                     .IsUnicode(false)
                     .HasColumnName("description");
+
+                entity.Property(e => e.GamePageId).HasColumnName("game_page_id");
+
+                entity.Property(e => e.GamePlatformId).HasColumnName("game_platform_id");
+
+                entity.Property(e => e.GameTypeId).HasColumnName("game_type_id");
+
+                entity.Property(e => e.ImgSrc)
+                    .HasMaxLength(1)
+                    .IsUnicode(false)
+                    .HasColumnName("img_src");
 
                 entity.Property(e => e.PostedDate).HasColumnName("posted_date");
 
@@ -143,17 +184,45 @@ namespace gamespace_api.Models
 
                 entity.Property(e => e.StatusId).HasColumnName("status_id");
 
+                entity.Property(e => e.StudioId).HasColumnName("studio_id");
+
                 entity.Property(e => e.Title)
                     .IsRequired()
                     .HasMaxLength(255)
                     .IsUnicode(false)
                     .HasColumnName("title");
 
+                entity.Property(e => e.TotalRating).HasColumnName("total_rating");
+
+                entity.HasOne(d => d.GamePage)
+                    .WithMany(p => p.Games)
+                    .HasForeignKey(d => d.GamePageId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__game__game_page___17236851");
+
+                entity.HasOne(d => d.GamePlatform)
+                    .WithMany(p => p.Games)
+                    .HasForeignKey(d => d.GamePlatformId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__game__game_platf__2C1E8537");
+
+                entity.HasOne(d => d.GameType)
+                    .WithMany(p => p.Games)
+                    .HasForeignKey(d => d.GameTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__game__game_type___2D12A970");
+
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.Games)
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__game__status_id__2F2FFC0C");
+                    .HasConstraintName("FK__game__status_id__18178C8A");
+
+                entity.HasOne(d => d.Studio)
+                    .WithMany(p => p.Games)
+                    .HasForeignKey(d => d.StudioId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__game__studio_id__162F4418");
             });
 
             modelBuilder.Entity<GamePage>(entity =>
@@ -163,15 +232,65 @@ namespace gamespace_api.Models
                 entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.BackgroundColor)
-                    .IsRequired()
                     .HasMaxLength(7)
                     .IsUnicode(false)
                     .HasColumnName("background_color");
 
                 entity.Property(e => e.BackgroundImage)
-                    .IsRequired()
                     .IsUnicode(false)
                     .HasColumnName("background_image");
+
+                entity.Property(e => e.Button1Url)
+                    .IsUnicode(false)
+                    .HasColumnName("button1_url");
+
+                entity.Property(e => e.Button2Url)
+                    .IsUnicode(false)
+                    .HasColumnName("button2_url");
+
+                entity.Property(e => e.ButtonColor)
+                    .HasMaxLength(7)
+                    .IsUnicode(false)
+                    .HasColumnName("button_color");
+
+                entity.Property(e => e.Description)
+                    .IsUnicode(false)
+                    .HasColumnName("description");
+
+                entity.Property(e => e.FontColor)
+                    .HasMaxLength(7)
+                    .IsUnicode(false)
+                    .HasColumnName("font_color");
+
+                entity.Property(e => e.Header)
+                    .HasMaxLength(255)
+                    .IsUnicode(false)
+                    .HasColumnName("header");
+
+                entity.Property(e => e.Img1Src)
+                    .IsUnicode(false)
+                    .HasColumnName("img1_src");
+
+                entity.Property(e => e.Img2Src)
+                    .IsUnicode(false)
+                    .HasColumnName("img2_src");
+
+                entity.Property(e => e.Img3Src)
+                    .IsUnicode(false)
+                    .HasColumnName("img3_src");
+            });
+
+            modelBuilder.Entity<GamePlatform>(entity =>
+            {
+                entity.ToTable("game_platform");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Platform)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false)
+                    .HasColumnName("platform");
             });
 
             modelBuilder.Entity<GameReview>(entity =>
@@ -188,13 +307,26 @@ namespace gamespace_api.Models
                     .WithMany(p => p.GameReviews)
                     .HasForeignKey(d => d.GameId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__game_revi__game___39AD8A7F");
+                    .HasConstraintName("FK__game_revi__game___22951AFD");
 
                 entity.HasOne(d => d.Review)
                     .WithMany(p => p.GameReviews)
                     .HasForeignKey(d => d.ReviewId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__game_revi__revie__3AA1AEB8");
+                    .HasConstraintName("FK__game_revi__revie__23893F36");
+            });
+
+            modelBuilder.Entity<GameType>(entity =>
+            {
+                entity.ToTable("game_type");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Type)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false)
+                    .HasColumnName("type");
             });
 
             modelBuilder.Entity<GameUser>(entity =>
@@ -211,13 +343,13 @@ namespace gamespace_api.Models
                     .WithMany(p => p.GameUsers)
                     .HasForeignKey(d => d.EndUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__game_user__end_u__33008CF0");
+                    .HasConstraintName("FK__game_user__end_u__1BE81D6E");
 
                 entity.HasOne(d => d.Game)
                     .WithMany(p => p.GameUsers)
                     .HasForeignKey(d => d.GameId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__game_user__game___320C68B7");
+                    .HasConstraintName("FK__game_user__game___1AF3F935");
             });
 
             modelBuilder.Entity<Log>(entity =>
@@ -255,13 +387,13 @@ namespace gamespace_api.Models
                     .WithMany(p => p.Reviews)
                     .HasForeignKey(d => d.EndUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__review__end_user__35DCF99B");
+                    .HasConstraintName("FK__review__end_user__1EC48A19");
 
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.Reviews)
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__review__status_i__36D11DD4");
+                    .HasConstraintName("FK__review__status_i__1FB8AE52");
             });
 
             modelBuilder.Entity<ServiceStatus>(entity =>
@@ -297,7 +429,6 @@ namespace gamespace_api.Models
                 entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.Description)
-                    .IsRequired()
                     .IsUnicode(false)
                     .HasColumnName("description");
 
@@ -317,7 +448,7 @@ namespace gamespace_api.Models
                 entity.HasOne(d => d.EndUser)
                     .WithMany(p => p.Studios)
                     .HasForeignKey(d => d.EndUserId)
-                    .HasConstraintName("FK__studio__end_user__297722B6");
+                    .HasConstraintName("FK__studio__end_user__10766AC2");
             });
 
             modelBuilder.Entity<Test>(entity =>
