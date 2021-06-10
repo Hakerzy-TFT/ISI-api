@@ -23,6 +23,32 @@ namespace gamespace_api.Controllers
             _context = context;
         }
 
+        // GET: api/Games/Rankings
+        [HttpPost]
+        [Route("Rankings")]
+        public async Task<ActionResult<IEnumerable<Game>>> GetRankings([FromBody] RankingRequest req)
+        {
+            string sqlcmd = $"EXEC gs_get_rankings_by_rating " +
+                $"@platform='{req.Platform}', "  +
+                $"@genre = '{req.Genre}';";
+
+            using (SqlConnection connection = new(_context.Database.GetConnectionString()))
+            {
+                var result = connection.Query<string>(sqlcmd);
+
+                if (result.Any())
+                {
+                    //Console.WriteLine(result.First().ToString());
+                    var studio = result.First().ToString();
+                    return Ok(studio);
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+        }
+
         // GET: api/Games
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Game>>> GetGames()
