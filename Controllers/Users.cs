@@ -18,6 +18,7 @@ using System.Threading;
 using Microsoft.Extensions.Configuration;
 using gamespace_api.Authentication;
 using Microsoft.Extensions.Logging;
+using System.Text;
 
 namespace gamespace_api.Controllers
 {
@@ -179,15 +180,11 @@ namespace gamespace_api.Controllers
                         };
                         _context.EndUsers.Add(user);
                         await _context.SaveChangesAsync();
-
                         var passwordManager = new PasswordManager();
                         var salt = passwordManager.GenerateSaltForPassowrd();
                         byte[] hashed = passwordManager.ComputePasswordHash(userRegister.Password, salt);
-
                         var res2 = connection.Query<string>(sql);
                         var userData = JsonConvert.DeserializeObject<List<EndUser>>(res2.First());
-                        Console.WriteLine(userData.First().Id);
-
                         _context.EndUserSecurities.Add(new EndUserSecurity
                         {
                             Salt = salt,
@@ -260,23 +257,19 @@ namespace gamespace_api.Controllers
                 _logger.Log(LogLevel.Information, $"Login() with email: ({request.UserMail})");
 
                 var user = _context.EndUsers.FirstOrDefault(u => u.Email == request.UserMail);
-
                 if (user == null)
                 {
                     //logger error
                     return BadRequest(Message.ToJson("user doesnt exist!"));
                 }
-
                 EndUserSecurity userSecurities = _context.EndUserSecurities.FirstOrDefault(s => s.EndUserId == user.Id);
-
                 if (userSecurities == null)
                 {
                     //logger error
                     return BadRequest(Message.ToJson("user securities doesnt exist!"));
                 }
-
                 PasswordManager pm = new();
-
+                
                 if (pm.IsPassowrdValid(request.Password, (int)userSecurities.Salt, userSecurities.HashedPassword) == false)
                 {
                     //logger error
