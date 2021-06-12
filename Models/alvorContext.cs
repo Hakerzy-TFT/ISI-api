@@ -40,7 +40,7 @@ namespace gamespace_api.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            
+           
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -141,9 +141,6 @@ namespace gamespace_api.Models
                 entity.HasIndex(e => e.Email, "UQ__end_user__AB6E61649325D20D")
                     .IsUnique();
 
-                entity.HasIndex(e => e.Username, "UQ__end_user__F3DBC57259588925")
-                    .IsUnique();
-
                 entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.DateOfBirth).HasColumnName("date_of_birth");
@@ -172,7 +169,6 @@ namespace gamespace_api.Models
                 entity.Property(e => e.UserTypeId).HasColumnName("user_type_id");
 
                 entity.Property(e => e.Username)
-                    .IsRequired()
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("username");

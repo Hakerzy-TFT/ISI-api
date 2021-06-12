@@ -150,6 +150,7 @@ namespace gamespace_api.Controllers
         public async Task<ActionResult<EndUser>> PostEndUser(UserRegister userRegister)
         {
             string sql = "EXEC   gs_get_user_by_email @email= '" + userRegister.Email + "'";
+            string sqlUsername = "EXEC   gs_get_user_by_username @username= '" + userRegister.Username + "'";
             try
             {
                 _logger.Log(LogLevel.Information, $"Called PostEndUser()with email: ({userRegister.Email})");
@@ -157,18 +158,20 @@ namespace gamespace_api.Controllers
                 using (SqlConnection connection = new SqlConnection(_context.Database.GetConnectionString()))
                 {
                     var result = connection.Query<string>(sql);
+                    var resultUsername = connection.Query<string>(sqlUsername);
                     //Console.WriteLine(result.First());
-                    if (result.Any())
+                    if (result.Any() || resultUsername.Any())
                     {
                         //Console.WriteLine(result.First());
                         return BadRequest("{\"result\" : \"user already exists!\"}");
                     }
-
+                    
                     else
                     {
                         //Console.WriteLine(result.First());
                         var user = new EndUser
                         {
+                            Username = userRegister.Username,
                             Email = userRegister.Email,
                             Name = userRegister.Name,
                             Surname = userRegister.Surname,
