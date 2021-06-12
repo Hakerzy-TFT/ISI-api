@@ -40,7 +40,7 @@ namespace gamespace_api.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-           
+            
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -156,11 +156,6 @@ namespace gamespace_api.Models
                     .IsUnicode(false)
                     .HasColumnName("name");
 
-                entity.Property(e => e.PhoneNumber)
-                    .HasMaxLength(20)
-                    .IsUnicode(false)
-                    .HasColumnName("phone_number");
-
                 entity.Property(e => e.Surname)
                     .HasMaxLength(100)
                     .IsUnicode(false)
@@ -193,7 +188,6 @@ namespace gamespace_api.Models
                 entity.Property(e => e.HashedPassword)
                     .IsRequired()
                     .HasMaxLength(255)
-                    .IsUnicode(false)
                     .HasColumnName("hashed_password");
 
                 entity.Property(e => e.Salt).HasColumnName("salt");
@@ -202,7 +196,7 @@ namespace gamespace_api.Models
                     .WithMany(p => p.EndUserSecurities)
                     .HasForeignKey(d => d.EndUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__end_user___end_u__2665ABE1");
+                    .HasConstraintName("FK__end_user___end_u__09946309");
             });
 
             modelBuilder.Entity<Game>(entity =>

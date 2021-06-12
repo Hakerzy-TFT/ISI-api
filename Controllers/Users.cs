@@ -155,12 +155,17 @@ namespace gamespace_api.Controllers
             try
             {
                 _logger.Log(LogLevel.Information, $"Called PostEndUser()with email: ({userRegister.Email})");
-
+                if (userRegister.Email == userRegister.Username)
+                {
+                    //Console.WriteLine(result.First());
+                    return BadRequest("{\"result\" : \"The same data!\"}");
+                }
                 using (SqlConnection connection = new SqlConnection(_context.Database.GetConnectionString()))
                 {
                     var result = connection.Query<string>(sql);
                     var resultUsername = connection.Query<string>(sqlUsername);
                     //Console.WriteLine(result.First());
+                    
                     if (result.Any() || resultUsername.Any())
                     {
                         //Console.WriteLine(result.First());
