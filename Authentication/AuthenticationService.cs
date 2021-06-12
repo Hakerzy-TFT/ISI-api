@@ -17,6 +17,7 @@ namespace gamespace_api.Authentication
         {
             var claims = new List<Claim>
             {
+                new Claim(JwtRegisteredClaimNames.GivenName, user.Username),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(HakerzyLib.Security.JwtClaimTypes.uid, user.Id.ToString()),
