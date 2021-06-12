@@ -9,6 +9,7 @@ namespace gamespace_api.Models
     {
         public Game()
         {
+            GameKeys = new HashSet<GameKey>();
             GameReviews = new HashSet<GameReview>();
             GameUsers = new HashSet<GameUser>();
         }
@@ -31,6 +32,7 @@ namespace gamespace_api.Models
         public virtual GameType GameType { get; set; }
         public virtual Status Status { get; set; }
         public virtual Studio Studio { get; set; }
+        public virtual ICollection<GameKey> GameKeys { get; set; }
         public virtual ICollection<GameReview> GameReviews { get; set; }
         public virtual ICollection<GameUser> GameUsers { get; set; }
     }

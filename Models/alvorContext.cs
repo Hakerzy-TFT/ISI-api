@@ -18,15 +18,18 @@ namespace gamespace_api.Models
         }
 
         public virtual DbSet<Bug> Bugs { get; set; }
+        public virtual DbSet<DebugGameLog> DebugGameLogs { get; set; }
         public virtual DbSet<EndUser> EndUsers { get; set; }
         public virtual DbSet<EndUserSecurity> EndUserSecurities { get; set; }
         public virtual DbSet<Game> Games { get; set; }
+        public virtual DbSet<GameKey> GameKeys { get; set; }
         public virtual DbSet<GamePage> GamePages { get; set; }
         public virtual DbSet<GamePlatform> GamePlatforms { get; set; }
         public virtual DbSet<GameReview> GameReviews { get; set; }
         public virtual DbSet<GameType> GameTypes { get; set; }
         public virtual DbSet<GameUser> GameUsers { get; set; }
         public virtual DbSet<Log> Logs { get; set; }
+        public virtual DbSet<RankingResult> RankingResults { get; set; }
         public virtual DbSet<Review> Reviews { get; set; }
         public virtual DbSet<ServiceStatus> ServiceStatuses { get; set; }
         public virtual DbSet<Status> Statuses { get; set; }
@@ -37,6 +40,7 @@ namespace gamespace_api.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -77,6 +81,57 @@ namespace gamespace_api.Models
                     .HasForeignKey(d => d.StatusId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__bug__status_id__0D99FE17");
+            });
+
+            modelBuilder.Entity<DebugGameLog>(entity =>
+            {
+                entity.ToTable("debug_game_log");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Description)
+                    .IsUnicode(false)
+                    .HasColumnName("description");
+
+                entity.Property(e => e.GamePageId).HasColumnName("game_page_id");
+
+                entity.Property(e => e.GamePlatformId).HasColumnName("game_platform_id");
+
+                entity.Property(e => e.GameTypeId).HasColumnName("game_type_id");
+
+                entity.Property(e => e.Genre)
+                    .HasMaxLength(255)
+                    .IsUnicode(false)
+                    .HasColumnName("genre");
+
+                entity.Property(e => e.ImgSrc)
+                    .IsUnicode(false)
+                    .HasColumnName("img_src");
+
+                entity.Property(e => e.Platform)
+                    .HasMaxLength(255)
+                    .IsUnicode(false)
+                    .HasColumnName("platform");
+
+                entity.Property(e => e.PostedDate).HasColumnName("posted_date");
+
+                entity.Property(e => e.ReleaseDate).HasColumnName("release_date");
+
+                entity.Property(e => e.StatusId).HasColumnName("status_id");
+
+                entity.Property(e => e.StudioId).HasColumnName("studio_id");
+
+                entity.Property(e => e.StudioName)
+                    .HasMaxLength(200)
+                    .IsUnicode(false)
+                    .HasColumnName("studio_name");
+
+                entity.Property(e => e.Title)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("title");
+
+                entity.Property(e => e.TotalRating).HasColumnName("total_rating");
             });
 
             modelBuilder.Entity<EndUser>(entity =>
@@ -174,7 +229,6 @@ namespace gamespace_api.Models
                 entity.Property(e => e.GameTypeId).HasColumnName("game_type_id");
 
                 entity.Property(e => e.ImgSrc)
-                    .HasMaxLength(1)
                     .IsUnicode(false)
                     .HasColumnName("img_src");
 
@@ -223,6 +277,34 @@ namespace gamespace_api.Models
                     .HasForeignKey(d => d.StudioId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__game__studio_id__162F4418");
+            });
+
+            modelBuilder.Entity<GameKey>(entity =>
+            {
+                entity.ToTable("game_key");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.EndUserId).HasColumnName("end_user_id");
+
+                entity.Property(e => e.GameId).HasColumnName("game_id");
+
+                entity.Property(e => e.Value)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false)
+                    .HasColumnName("value");
+
+                entity.HasOne(d => d.EndUser)
+                    .WithMany(p => p.GameKeys)
+                    .HasForeignKey(d => d.EndUserId)
+                    .HasConstraintName("FK__game_key__end_us__5CC1BC92");
+
+                entity.HasOne(d => d.Game)
+                    .WithMany(p => p.GameKeys)
+                    .HasForeignKey(d => d.GameId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__game_key__game_i__5BCD9859");
             });
 
             modelBuilder.Entity<GamePage>(entity =>
@@ -367,6 +449,58 @@ namespace gamespace_api.Models
                     .HasColumnName("log_msg");
             });
 
+            modelBuilder.Entity<RankingResult>(entity =>
+            {
+                entity.ToTable("ranking_results");
+
+                entity.HasIndex(e => e.Title, "UQ__ranking___E52A1BB3EC29DA0D")
+                    .IsUnique();
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Description)
+                    .IsUnicode(false)
+                    .HasColumnName("description");
+
+                entity.Property(e => e.GamePageId).HasColumnName("game_page_id");
+
+                entity.Property(e => e.Genre)
+                    .HasMaxLength(255)
+                    .IsUnicode(false)
+                    .HasColumnName("GENRE");
+
+                entity.Property(e => e.ImgSrc)
+                    .IsUnicode(false)
+                    .HasColumnName("img_src");
+
+                entity.Property(e => e.Platform)
+                    .HasMaxLength(255)
+                    .IsUnicode(false)
+                    .HasColumnName("platform");
+
+                entity.Property(e => e.PostedDate).HasColumnName("posted_date");
+
+                entity.Property(e => e.ReleaseDate).HasColumnName("release_date");
+
+                entity.Property(e => e.Status)
+                    .HasMaxLength(255)
+                    .IsUnicode(false)
+                    .HasColumnName("status");
+
+                entity.Property(e => e.Studio)
+                    .HasMaxLength(255)
+                    .IsUnicode(false)
+                    .HasColumnName("studio");
+
+                entity.Property(e => e.Title)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false)
+                    .HasColumnName("title");
+
+                entity.Property(e => e.TotalRating).HasColumnName("total_rating");
+            });
+
             modelBuilder.Entity<Review>(entity =>
             {
                 entity.ToTable("review");
@@ -441,7 +575,6 @@ namespace gamespace_api.Models
                     .HasColumnName("name");
 
                 entity.Property(e => e.Owner)
-                    .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("owner");
 

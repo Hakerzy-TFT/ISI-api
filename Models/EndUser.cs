@@ -11,6 +11,7 @@ namespace gamespace_api.Models
         {
             Bugs = new HashSet<Bug>();
             EndUserSecurities = new HashSet<EndUserSecurity>();
+            GameKeys = new HashSet<GameKey>();
             GameUsers = new HashSet<GameUser>();
             Reviews = new HashSet<Review>();
             Studios = new HashSet<Studio>();
@@ -29,6 +30,7 @@ namespace gamespace_api.Models
         public virtual UserType UserType { get; set; }
         public virtual ICollection<Bug> Bugs { get; set; }
         public virtual ICollection<EndUserSecurity> EndUserSecurities { get; set; }
+        public virtual ICollection<GameKey> GameKeys { get; set; }
         public virtual ICollection<GameUser> GameUsers { get; set; }
         public virtual ICollection<Review> Reviews { get; set; }
         public virtual ICollection<Studio> Studios { get; set; }
