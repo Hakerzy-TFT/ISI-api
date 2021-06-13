@@ -48,6 +48,34 @@ namespace gamespace_api.Controllers
 
             return review;
         }
+        // GET: api/Reviews/5
+        [HttpGet("bygameid/{id}")]
+        public ActionResult<Review> GetReviewByGameId(int id)
+        {
+            string sql = "EXEC gs_get_review_by_gameId @game_id= '" + id + "'";
+
+            try
+            {
+                _logger.Log(LogLevel.Information, $"Called GetReviewByGameId()");
+                using (SqlConnection connection = new(_context.Database.GetConnectionString()))
+                {
+                    var result = connection.Query<int>(sql);
+                    if (result.Any())
+                    {
+                        return Ok(result.First().ToString());
+                    }
+                    else
+                    {
+                        return BadRequest(Message.ToJson("Game not found!"));
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.Log(LogLevel.Error, $"Exception thrown in runtiome - {e.Message}");
+                throw;
+            }
+        }
 
         // PUT: api/Reviews/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
