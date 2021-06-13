@@ -28,9 +28,12 @@ namespace gamespace_api.Controllers
         [Route("Rankings")]
         public ActionResult<IEnumerable<Game>> GetRankings([FromBody] RankingRequest req)
         {
-            string sqlcmd = $"EXEC gs_get_rankings_by_rating " +
-                $"@platform='{req.Platform}', "  +
+            string sqlcmd = $"EXEC gs_get_rankings " +
+                $"@platform='{req.Platform}', " +
+                $"@criterium='{req.Criterium}', " +
                 $"@genre = '{req.Genre}';";
+
+            Console.WriteLine(sqlcmd);
 
             using (SqlConnection connection = new(_context.Database.GetConnectionString()))
             {
