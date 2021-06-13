@@ -26,7 +26,7 @@ namespace gamespace_api.Controllers
         // GET: api/Games/Rankings
         [HttpPost]
         [Route("Rankings")]
-        public async Task<ActionResult<IEnumerable<Game>>> GetRankings([FromBody] RankingRequest req)
+        public ActionResult<IEnumerable<Game>> GetRankings([FromBody] RankingRequest req)
         {
             string sqlcmd = $"EXEC gs_get_rankings_by_rating " +
                 $"@platform='{req.Platform}', "  +
@@ -159,12 +159,6 @@ namespace gamespace_api.Controllers
                     return BadRequest();
                 }
             }
-
-            //_context.Games.Add(game);
-
-            await _context.SaveChangesAsync();
-
-            return Ok();
         }
 
         // DELETE: api/Games/5
