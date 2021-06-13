@@ -59,7 +59,7 @@ namespace gamespace_api.Controllers
                 _logger.Log(LogLevel.Information, $"Called GetReviewByGameId()");
                 using (SqlConnection connection = new(_context.Database.GetConnectionString()))
                 {
-                    var result = connection.Query<int>(sql);
+                    var result = connection.Query<string>(sql);
                     if (result.Any())
                     {
                         return Ok(result.First().ToString());
