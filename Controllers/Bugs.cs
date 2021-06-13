@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using gamespace_api.Models;
 using Microsoft.Extensions.Logging;
+using gamespace_api.Models.DataTransfer;
+using Microsoft.Data.SqlClient;
+using Dapper;
+using HakerzyLib.core;
 
 namespace gamespace_api.Controllers
 {
@@ -80,12 +84,47 @@ namespace gamespace_api.Controllers
         // POST: api/Bugs
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Bug>> PostBug(Bug bug)
+        public async Task<ActionResult<Bug>> PostBug(BugRequest bugRequest)
         {
-            _context.Bugs.Add(bug);
-            await _context.SaveChangesAsync();
+            string sql = "select * from game where id = " + bugRequest.GameId + "";
 
-            return CreatedAtAction("GetBug", new { id = bug.Id }, bug);
+            try
+            {
+                _logger.Log(LogLevel.Information, $"Called PostReview()");
+                using (SqlConnection connection = new(_context.Database.GetConnectionString()))
+                {
+                    var result = connection.Query<int>(sql);
+                    if (!result.Any())
+                    {
+                        return BadRequest("This game does not exist");
+                    }
+                    
+                    sql = "select id from status where name = 'New'";
+                    var result2 = connection.Query<int>(sql);
+
+                    var bug = new Bug
+                    {
+                        Title = bugRequest.Title,
+                        Description= bugRequest.Description,
+                        DateOfCreation = DateTime.Now,
+                        EndUserId = bugRequest.EndUserId,
+                        StatusId = result2.First()
+                    };
+
+                    _context.Bugs.Add(bug);
+                    await _context.SaveChangesAsync();
+
+                    sql = "INSERT INTO game_bug VALUES(" + bugRequest.GameId + "," + bug.Id + ")";
+                    var result3 = connection.Query<int>(sql);
+                }
+
+                return Ok(Message.ToJson("Bug is created"));
+            }
+            catch (Exception e)
+            {
+                _logger.Log(LogLevel.Error, $"Exception thrown in runtiome - {e.Message}");
+                throw;
+            }
         }
 
         // DELETE: api/Bugs/5

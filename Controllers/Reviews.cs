@@ -20,12 +20,10 @@ namespace gamespace_api.Controllers
     public class Reviews : ControllerBase
     {
         private readonly alvorContext _context;
-        private readonly IConfiguration _configuration;
         private readonly ILogger<Reviews> _logger;
 
-        public Reviews(alvorContext context, IConfiguration configuration, ILogger<Reviews> logger)
+        public Reviews(alvorContext context, ILogger<Reviews> logger)
         {
-            _configuration = configuration;
             _context = context;
             _logger = logger;
         }
