@@ -14,11 +14,11 @@ namespace gamespace_api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GamesController : ControllerBase
+    public class Games : ControllerBase
     {
         private readonly alvorContext _context;
 
-        public GamesController(alvorContext context)
+        public Games(alvorContext context)
         {
             _context = context;
         }
@@ -61,16 +61,36 @@ namespace gamespace_api.Controllers
 
         // GET: api/Games/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Game>> GetGame(int id)
+        public async Task<ActionResult<GameDto>> GetGame(int id)
         {
             var game = await _context.Games.FindAsync(id);
+            var gamePage = _context.GamePages.FirstOrDefault(s => s.Id == game.GamePageId);
+            var studio = await _context.Studios.FindAsync(game.StudioId);
+
+            GameDto dto = new()
+            {
+                Id = game.Id,
+                Title = game.Title,
+                Description = game.Description,
+                ReleaseDate = game.ReleaseDate,
+                PostedDate = game.PostedDate,
+                TotalRating = game.TotalRating,
+                ImgSrc = game.ImgSrc,
+                Img1Src = gamePage.Img1Src,
+                Img2Src = gamePage.Img2Src,
+                Img3Src = gamePage.Img3Src,
+                Header = gamePage.Header,
+                FontColor = gamePage.FontColor,
+                ButtonColor = gamePage.ButtonColor,
+                StudioName = studio.Name
+            };
 
             if (game == null)
             {
                 return NotFound();
             }
 
-            return game;
+            return dto;
         }
 
         // PUT: api/Games/5
