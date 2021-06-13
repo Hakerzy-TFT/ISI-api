@@ -22,11 +22,9 @@ namespace gamespace_api.Controllers
         private readonly alvorContext _context;
         
         private readonly ILogger<Users> _logger;
-        private readonly IConfiguration _configuration;
 
-        public GameUsers(alvorContext context, IConfiguration configuration, ILogger<Users> logger)
+        public GameUsers(alvorContext context,  ILogger<Users> logger)
         {
-            _configuration = configuration;
             _context = context;
             _logger = logger;
 
@@ -92,14 +90,14 @@ namespace gamespace_api.Controllers
         public async Task<ActionResult<GameUser>> PostGameUser(GameUserData gameUserData)
         {
             string sql = "select id from game where title='" + gameUserData.Title + "'";
-            string sql2 = "select * from end_user where id=" + gameUserData.UserId + "";
             try
             {
-                _logger.Log(LogLevel.Information, $"Called PostGameUserr() with game_title: ({gameUserData.Title}) userId: ({gameUserData.UserId})");
+                _logger.Log(LogLevel.Information, $"Called PostGameUser() with game_title: ({gameUserData.Title}) userId: ({gameUserData.UserId})");
                 using (SqlConnection connection = new SqlConnection(_context.Database.GetConnectionString()))
                 {
                     var result = connection.Query<int>(sql);
-                    var result2 = connection.Query<string>(sql2);
+                    sql = "select * from end_user where id=" + gameUserData.UserId + "";
+                    var result2 = connection.Query<string>(sql);
                     if (!result.Any() || !result2.Any())
                     {
                         return BadRequest("Invalid data!");
