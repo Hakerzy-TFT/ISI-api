@@ -78,6 +78,32 @@ namespace gamespace_api.Controllers
             return NoContent();
         }
 
+        [HttpPost]
+        [Route("AssingKey")]
+        public ActionResult<GameKey> PostAssignKey([FromBody] GameKeyDto gameKey)
+        {
+            if (HakerzyLib.Core.Utils.IsAnyNullOrEmpty(gameKey))
+            {
+                return BadRequest("Wrong input data!");
+            }
+
+            string sqlcmd = $"EXEC gs_assign_key @gameTitle = '{gameKey.GameName}', @username = '{gameKey.Username}';";
+
+            using (SqlConnection conn = new(_context.Database.GetConnectionString()))
+            {
+                var result = conn.Query<string>(sqlcmd);
+                if (result.Any())
+                {
+                    var key = result.First().ToString();
+                    return Ok(key);
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+        }
+
         // POST: api/GameKeys
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
