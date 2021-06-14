@@ -175,15 +175,13 @@ namespace gamespace_api.Controllers
         {
             try
             {
-                _logger.Log(LogLevel.Information, $"Called PutEndUser with email: ");
+                _logger.Log(LogLevel.Information, $"Called PutEndUserUsername ");
                 string sql = "select id from end_user_security where end_user_id = " + userUpdatePassword.EndUserId + "";
                 if (!_context.EndUserSecurities.Any(o => o.EndUserId == userUpdatePassword.EndUserId))
                     return BadRequest("User does not exist!");
                 using (SqlConnection connection = new(_context.Database.GetConnectionString()))
                 {
                     var result = connection.Query<int>(sql);
-                    Console.WriteLine(result.First());
-
                     var passwordManager = new PasswordManager();
                     var salt = passwordManager.GenerateSaltForPassowrd();
                     byte[] hashed = passwordManager.ComputePasswordHash(userUpdatePassword.Password, salt);
