@@ -9,8 +9,8 @@ namespace gamespace_api.Models.DataTransfer
     {
         public string Title { set; get; }
         public string Description { set; get; }
-        public DateTime ReleaseDate { set; get; }
-        public DateTime PostedDate { set; get; }
+        public DateTime? ReleaseDate { set; get; }
+        public DateTime? PostedDate { set; get; }
         public string GameStudioName { set; get; }
         public string Platform { set; get; }
         public string Genre { set; get; }

@@ -87,7 +87,7 @@ namespace gamespace_api.Controllers
                 return BadRequest("Wrong input data!");
             }
 
-            string sqlcmd = $"EXEC gs_assign_key @gameTitle = '{gameKey.GameName}', @username = '{gameKey.Username}';";
+            string sqlcmd = $"EXEC gs_assign_key @gameTitle = '{gameKey.GameName}', @username = '{gameKey.Username}', @price={50};";
 
             using (SqlConnection conn = new(_context.Database.GetConnectionString()))
             {

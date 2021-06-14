@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="HakerzyLib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Dapper" Version="2.0.90" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.6" />
@@ -26,7 +30,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HakerzyLib\HakerzyLib.csproj" />
+    <Reference Include="HakerzyLib">
+      <HintPath>C:\Users\piotr\source\repos\HakerzyLib\bin\Debug\net5.0\HakerzyLib.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 
