@@ -251,6 +251,32 @@ namespace gamespace_api.Controllers
         }
 
         [HttpPost]
+        [Route("Coins")]
+        public ActionResult<string> UpdateCoins([FromBody]UserCoinsDto request)
+        {
+            if (HakerzyLib.Core.Utils.IsAnyNullOrEmpty(request))
+            {
+                return BadRequest("Wrong input data!");
+            }
+
+            string sqlcmd = $"EXEC gs_update_user_coins @username='{request.Username}', @coins = {request.IncrementBalanceBy};";
+
+            using (SqlConnection conn = new(_context.Database.GetConnectionString()))
+            {
+                var result = conn.Query<string>(sqlcmd);
+                if (result.Any())
+                {
+                    var key = result.First().ToString();
+                    return Ok(key);
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+        }
+
+        [HttpPost]
         [Route("login")]
         public ActionResult<string> Login([FromBody] UserAuth request)
         {

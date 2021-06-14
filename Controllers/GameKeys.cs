@@ -6,6 +6,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using gamespace_api.Models;
+using gamespace_api.Models.DataTransfer;
+using Microsoft.Data.SqlClient;
+using Dapper;
+using Microsoft.Extensions.Configuration;
 
 namespace gamespace_api.Controllers
 {
@@ -14,9 +18,11 @@ namespace gamespace_api.Controllers
     public class GameKeys : ControllerBase
     {
         private readonly alvorContext _context;
+        private readonly IConfiguration _configuration;
 
-        public GameKeys(alvorContext context)
+        public GameKeys(alvorContext context, IConfiguration config)
         {
+            _configuration = config;
             _context = context;
         }
 
@@ -72,15 +78,57 @@ namespace gamespace_api.Controllers
             return NoContent();
         }
 
+        [HttpPost]
+        [Route("AssingKey")]
+        public ActionResult<GameKey> PostAssignKey([FromBody] GameKeyDto gameKey)
+        {
+            if (HakerzyLib.Core.Utils.IsAnyNullOrEmpty(gameKey))
+            {
+                return BadRequest("Wrong input data!");
+            }
+
+            string sqlcmd = $"EXEC gs_assign_key @gameTitle = '{gameKey.GameName}', @username = '{gameKey.Username}';";
+
+            using (SqlConnection conn = new(_context.Database.GetConnectionString()))
+            {
+                var result = conn.Query<string>(sqlcmd);
+                if (result.Any())
+                {
+                    var key = result.First().ToString();
+                    return Ok(key);
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+        }
+
         // POST: api/GameKeys
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<GameKey>> PostGameKey(GameKey gameKey)
+        public ActionResult<GameKey> PostGameKey([FromBody] GameKeyDto gameKey)
         {
-            _context.GameKeys.Add(gameKey);
-            await _context.SaveChangesAsync();
+            if (HakerzyLib.Core.Utils.IsAnyNullOrEmpty(gameKey))
+            {
+                return BadRequest("Wrong input data!");
+            }
 
-            return CreatedAtAction("GetGameKey", new { id = gameKey.Id }, gameKey);
+            string sqlcmd = $"EXEC  gs_add_key @gameTitle = '{gameKey.GameName}', @key = '{gameKey.Value}';";
+
+            using (SqlConnection conn = new(_context.Database.GetConnectionString()))
+            {
+                var result = conn.Query<string>(sqlcmd);
+                if (result.Any())
+                {
+                    var key = result.First().ToString();
+                    return Ok(key);
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
         }
 
         // DELETE: api/GameKeys/5

@@ -14,11 +14,11 @@ namespace gamespace_api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GamesController : ControllerBase
+    public class Games : ControllerBase
     {
         private readonly alvorContext _context;
 
-        public GamesController(alvorContext context)
+        public Games(alvorContext context)
         {
             _context = context;
         }
@@ -26,11 +26,14 @@ namespace gamespace_api.Controllers
         // GET: api/Games/Rankings
         [HttpPost]
         [Route("Rankings")]
-        public async Task<ActionResult<IEnumerable<Game>>> GetRankings([FromBody] RankingRequest req)
+        public ActionResult<IEnumerable<Game>> GetRankings([FromBody] RankingRequest req)
         {
-            string sqlcmd = $"EXEC gs_get_rankings_by_rating " +
-                $"@platform='{req.Platform}', "  +
+            string sqlcmd = $"EXEC gs_get_rankings " +
+                $"@platform='{req.Platform}', " +
+                $"@criterium='{req.Criterium}', " +
                 $"@genre = '{req.Genre}';";
+
+            Console.WriteLine(sqlcmd);
 
             using (SqlConnection connection = new(_context.Database.GetConnectionString()))
             {
@@ -58,16 +61,36 @@ namespace gamespace_api.Controllers
 
         // GET: api/Games/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Game>> GetGame(int id)
+        public async Task<ActionResult<GameDto>> GetGame(int id)
         {
             var game = await _context.Games.FindAsync(id);
+            var gamePage = _context.GamePages.FirstOrDefault(s => s.Id == game.GamePageId);
+            var studio = await _context.Studios.FindAsync(game.StudioId);
+
+            GameDto dto = new()
+            {
+                Id = game.Id,
+                Title = game.Title,
+                Description = game.Description,
+                ReleaseDate = game.ReleaseDate,
+                PostedDate = game.PostedDate,
+                TotalRating = game.TotalRating,
+                ImgSrc = game.ImgSrc,
+                Img1Src = gamePage.Img1Src,
+                Img2Src = gamePage.Img2Src,
+                Img3Src = gamePage.Img3Src,
+                Header = gamePage.Header,
+                FontColor = gamePage.FontColor,
+                ButtonColor = gamePage.ButtonColor,
+                StudioName = studio.Name
+            };
 
             if (game == null)
             {
                 return NotFound();
             }
 
-            return game;
+            return dto;
         }
 
         // PUT: api/Games/5
@@ -159,12 +182,6 @@ namespace gamespace_api.Controllers
                     return BadRequest();
                 }
             }
-
-            //_context.Games.Add(game);
-
-            await _context.SaveChangesAsync();
-
-            return Ok();
         }
 
         // DELETE: api/Games/5
