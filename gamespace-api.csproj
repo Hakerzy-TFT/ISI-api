@@ -26,9 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="HakerzyLib">
-      <HintPath>C:\Users\piotr\source\repos\HakerzyLib\bin\Debug\net5.0\HakerzyLib.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\HakerzyLib\HakerzyLib.csproj" />
   </ItemGroup>
 
 
