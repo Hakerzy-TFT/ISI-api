@@ -68,6 +68,7 @@ namespace gamespace_api.Controllers
             }
         }
 
+
         [HttpGet("byemail/{email}")]
         public ActionResult<EndUser> GetEndUser(string email)
         {
@@ -145,18 +146,17 @@ namespace gamespace_api.Controllers
         }
 
 
-
-        [HttpPut("/update-username")]
-        public async Task<IActionResult> PutEndUserPassword(EndUserDto endUserDto)
+        [HttpPut("update-username")]
+        public async Task<IActionResult> PutEndUserPassword(UserUpdateUsername userUpdateUsername)
         {
             try
             {
-                _logger.Log(LogLevel.Information, $"Called PutEndUser with id: {endUserDto.Id}");
-                if (!_context.EndUsers.Any(o => o.Id == endUserDto.Id))
+                _logger.Log(LogLevel.Information, $"Called PutEndUser with id: {userUpdateUsername.EndUserId}");
+                if (!_context.EndUsers.Any(o => o.Id == userUpdateUsername.EndUserId))
                     return BadRequest("User does not exist!");
-                if (_context.EndUsers.Any(o => o.Username == endUserDto.Username))
+                if (_context.EndUsers.Any(o => o.Username == userUpdateUsername.Username))
                     return BadRequest("Username exists");
-                var user = new EndUser() { Id = endUserDto.Id, Username = endUserDto.Username };
+                var user = new EndUser() { Id = userUpdateUsername.EndUserId, Username = userUpdateUsername.Username };
 
                 _context.EndUsers.Attach(user);
                 _context.Entry(user).Property(x => x.Username).IsModified = true;
@@ -170,7 +170,7 @@ namespace gamespace_api.Controllers
                 throw;
             }
         }
-        [HttpPut("/update-password")]
+        [HttpPut("update-password")]
         public async Task<IActionResult> PutEndUserUsername(UserUpdatePassword userUpdatePassword)
         {
             try
