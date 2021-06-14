@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Data.SqlClient;
 using Dapper;
 using HakerzyLib.core;
+using gamespace_api.Models.DataTransfer;
 
 namespace gamespace_api.Controllers
 {
@@ -52,8 +53,8 @@ namespace gamespace_api.Controllers
 
             return studioPage;
         }
-        [HttpGet("studio-and-page")]
-        public ActionResult<EndUser> GetStudioAndPage(string name)
+        [HttpPost("studio-and-page")]
+        public ActionResult<EndUser> GetStudioAndPage(StudioPagesDto studioPagesDto)
         {
             try
             {
@@ -61,7 +62,7 @@ namespace gamespace_api.Controllers
 
                 
 
-                string sql = "EXEC gs_get_studio_page_and_studio @studio_name='"+name+"'";
+                string sql = "EXEC gs_get_studio_page_and_studio @studio_name='"+ studioPagesDto.Name + "'";
 
 
                 using (SqlConnection connection = new(_context.Database.GetConnectionString()))
