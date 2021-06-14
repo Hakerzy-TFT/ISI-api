@@ -22,6 +22,7 @@ namespace gamespace_api.Models
         public virtual DbSet<EndUser> EndUsers { get; set; }
         public virtual DbSet<EndUserSecurity> EndUserSecurities { get; set; }
         public virtual DbSet<Game> Games { get; set; }
+        public virtual DbSet<GameBug> GameBugs { get; set; }
         public virtual DbSet<GameKey> GameKeys { get; set; }
         public virtual DbSet<GamePage> GamePages { get; set; }
         public virtual DbSet<GamePlatform> GamePlatforms { get; set; }
@@ -34,12 +35,16 @@ namespace gamespace_api.Models
         public virtual DbSet<ServiceStatus> ServiceStatuses { get; set; }
         public virtual DbSet<Status> Statuses { get; set; }
         public virtual DbSet<Studio> Studios { get; set; }
+        public virtual DbSet<StudioPage> StudioPages { get; set; }
         public virtual DbSet<Test> Tests { get; set; }
         public virtual DbSet<UserType> UserTypes { get; set; }
         public virtual DbSet<Util> Utils { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            if (!optionsBuilder.IsConfigured)
+            {
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -142,6 +147,8 @@ namespace gamespace_api.Models
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
+                entity.Property(e => e.AccountLevel).HasColumnName("account_level");
+
                 entity.Property(e => e.DateOfBirth).HasColumnName("date_of_birth");
 
                 entity.Property(e => e.Email)
@@ -149,6 +156,10 @@ namespace gamespace_api.Models
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("email");
+
+                entity.Property(e => e.IconSrc)
+                    .IsUnicode(false)
+                    .HasColumnName("icon_src");
 
                 entity.Property(e => e.Name)
                     .HasMaxLength(100)
@@ -266,6 +277,29 @@ namespace gamespace_api.Models
                     .HasForeignKey(d => d.StudioId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__game__studio_id__162F4418");
+            });
+
+            modelBuilder.Entity<GameBug>(entity =>
+            {
+                entity.ToTable("game_bug");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.BugId).HasColumnName("bug_id");
+
+                entity.Property(e => e.GameId).HasColumnName("game_id");
+
+                entity.HasOne(d => d.Bug)
+                    .WithMany(p => p.GameBugs)
+                    .HasForeignKey(d => d.BugId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__game_bug__bug_id__53F76C67");
+
+                entity.HasOne(d => d.Game)
+                    .WithMany(p => p.GameBugs)
+                    .HasForeignKey(d => d.GameId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__game_bug__game_i__5303482E");
             });
 
             modelBuilder.Entity<GameKey>(entity =>
@@ -567,10 +601,73 @@ namespace gamespace_api.Models
                     .IsUnicode(false)
                     .HasColumnName("owner");
 
+                entity.Property(e => e.StudioPageId).HasColumnName("studio_page_id");
+
                 entity.HasOne(d => d.EndUser)
                     .WithMany(p => p.Studios)
                     .HasForeignKey(d => d.EndUserId)
                     .HasConstraintName("FK__studio__end_user__10766AC2");
+
+                entity.HasOne(d => d.StudioPage)
+                    .WithMany(p => p.Studios)
+                    .HasForeignKey(d => d.StudioPageId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__studio__studio_p__62458BBE");
+            });
+
+            modelBuilder.Entity<StudioPage>(entity =>
+            {
+                entity.ToTable("studio_page");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.BackgroundColor)
+                    .HasMaxLength(7)
+                    .IsUnicode(false)
+                    .HasColumnName("background_color");
+
+                entity.Property(e => e.BackgroundImage)
+                    .IsUnicode(false)
+                    .HasColumnName("background_image");
+
+                entity.Property(e => e.Button1Url)
+                    .IsUnicode(false)
+                    .HasColumnName("button1_url");
+
+                entity.Property(e => e.Button2Url)
+                    .IsUnicode(false)
+                    .HasColumnName("button2_url");
+
+                entity.Property(e => e.ButtonColor)
+                    .HasMaxLength(7)
+                    .IsUnicode(false)
+                    .HasColumnName("button_color");
+
+                entity.Property(e => e.Description)
+                    .IsUnicode(false)
+                    .HasColumnName("description");
+
+                entity.Property(e => e.FontColor)
+                    .HasMaxLength(7)
+                    .IsUnicode(false)
+                    .HasColumnName("font_color");
+
+                entity.Property(e => e.Header)
+                    .HasMaxLength(255)
+                    .IsUnicode(false)
+                    .HasColumnName("header");
+
+                entity.Property(e => e.Img1Src)
+                    .IsUnicode(false)
+                    .HasColumnName("img1_src");
+
+                entity.Property(e => e.Img2Src)
+                    .IsUnicode(false)
+                    .HasColumnName("img2_src");
+
+                entity.Property(e => e.Img3Src)
+                    .IsUnicode(false)
+                    .HasColumnName("img3_src");
             });
 
             modelBuilder.Entity<Test>(entity =>

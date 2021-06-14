@@ -344,6 +344,56 @@ namespace gamespace_api.Controllers
             }
         }
 
+        [HttpGet("profile/{id}")]
+        //[Route("profile")]
+        public ActionResult<UserProfileDto> GetProfile(int id)
+        {
+            List<ActivitiesDto> activities = new();
+
+            var reviews = _context.Reviews
+                .Where(b => b.EndUserId == id)
+                .ToList();
+
+            if (!reviews.Any())
+            {
+                return BadRequest("");
+            }
+
+            foreach (var instance in reviews)
+            {
+                var gameReview = _context.GameReviews.First(s => s.ReviewId == instance.Id);
+                //.Where();
+
+                var game = _context.Games.First(b => b.Id == gameReview.GameId);
+
+                activities.Add(new()
+                {
+                    Day = DateTime.UtcNow.DayOfWeek.ToString(),
+                    ActivityTitle = "Game Review",
+                    IssueTitle = "Review",
+                    TargetGame = game.Title,
+                    Time = DateTime.UtcNow.Hour.ToString() + DateTime.UtcNow.Minute.ToString(),
+                    Review = instance.ReviewContent
+                });
+            }
+
+            var user = _context.EndUsers.First(u => u.Id == reviews[0].Id);
+            var userType = _context.UserTypes.First(t => t.Id == user.UserTypeId);
+
+            UserProfileDto result = new()
+            {
+                Username = user.Username,
+                Name = user.Name,
+                Email = user.Email,
+                IconSrc = user.IconSrc,
+                UserLevel = (int)(user.AccountLevel == null ? 1 : user.AccountLevel),
+                UserType = userType.Name,
+                Activities = activities
+            };
+
+            return Ok(JsonConvert.SerializeObject(result));
+        }
+
         [HttpPost]
         [Route("login")]
         public ActionResult<string> Login([FromBody] UserAuth request)

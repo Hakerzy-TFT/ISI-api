@@ -25,6 +25,8 @@ namespace gamespace_api.Models
         public int Wallet { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public int UserTypeId { get; set; }
+        public string IconSrc { get; set; }
+        public int? AccountLevel { get; set; }
 
         public virtual UserType UserType { get; set; }
         public virtual ICollection<Bug> Bugs { get; set; }
