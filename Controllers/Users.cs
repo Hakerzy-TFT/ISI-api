@@ -1,4 +1,4 @@
-﻿  
+﻿
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,7 +41,7 @@ namespace gamespace_api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EndUser>>> GetEndUsers()
         {
-            _logger.Log(LogLevel.Information,"Called GetEndUsers()");
+            _logger.Log(LogLevel.Information, "Called GetEndUsers()");
             return await _context.EndUsers.ToListAsync();
         }
 
@@ -51,7 +51,7 @@ namespace gamespace_api.Controllers
         {
             try
             {
-                _logger.Log(LogLevel.Information,"Called GetEndUsersby id: " + id);
+                _logger.Log(LogLevel.Information, "Called GetEndUsersby id: " + id);
                 var endUser = await _context.EndUsers.FindAsync(id);
 
                 if (endUser == null)
@@ -61,11 +61,11 @@ namespace gamespace_api.Controllers
 
                 return endUser;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 _logger.Log(LogLevel.Error, $"Exception thrown in runtiome - {e.Message}");
                 throw;
-            }  
+            }
         }
 
         [HttpGet("byemail/{email}")]
@@ -119,7 +119,6 @@ namespace gamespace_api.Controllers
                 }
 
                 _context.Entry(endUser).State = EntityState.Modified;
-
                 try
                 {
                     await _context.SaveChangesAsync();
@@ -142,7 +141,76 @@ namespace gamespace_api.Controllers
             {
                 _logger.Log(LogLevel.Error, $"Exception thrown in runtiome - {e.Message}");
                 throw;
-            }  
+            }
+        }
+
+
+
+        [HttpPut("/update-username")]
+        public async Task<IActionResult> PutEndUserPassword(EndUserDto endUserDto)
+        {
+            try
+            {
+                _logger.Log(LogLevel.Information, $"Called PutEndUser with id: {endUserDto.Id}");
+                if (!_context.EndUsers.Any(o => o.Id == endUserDto.Id))
+                    return BadRequest("User does not exist!");
+                if (_context.EndUsers.Any(o => o.Username == endUserDto.Username))
+                    return BadRequest("Username exists");
+                var user = new EndUser() { Id = endUserDto.Id, Username = endUserDto.Username };
+
+                _context.EndUsers.Attach(user);
+                _context.Entry(user).Property(x => x.Username).IsModified = true;
+
+                await _context.SaveChangesAsync();
+                return Ok("User updated!");
+            }
+            catch (Exception e)
+            {
+                _logger.Log(LogLevel.Error, $"Exception thrown in runtiome - {e.Message}");
+                throw;
+            }
+        }
+        [HttpPut("/update-password")]
+        public async Task<IActionResult> PutEndUserUsername(UserUpdatePassword userUpdatePassword)
+        {
+            try
+            {
+                _logger.Log(LogLevel.Information, $"Called PutEndUser with email: ");
+                string sql = "select id from end_user_security where end_user_id = " + userUpdatePassword.EndUserId + "";
+                if (!_context.EndUserSecurities.Any(o => o.EndUserId == userUpdatePassword.EndUserId))
+                    return BadRequest("User does not exist!");
+                using (SqlConnection connection = new(_context.Database.GetConnectionString()))
+                {
+                    var result = connection.Query<int>(sql);
+                    Console.WriteLine(result.First());
+
+                    var passwordManager = new PasswordManager();
+                    var salt = passwordManager.GenerateSaltForPassowrd();
+                    byte[] hashed = passwordManager.ComputePasswordHash(userUpdatePassword.Password, salt);
+                    var endUserSecurities = new EndUserSecurity()
+                    {
+                        Id = result.First(),
+                        EndUserId = userUpdatePassword.EndUserId,
+                        Salt = salt,
+                        HashedPassword = hashed,
+
+                    };
+
+
+
+                    _context.EndUserSecurities.Attach(endUserSecurities);
+
+                    _context.Entry(endUserSecurities).State = EntityState.Modified;
+                    //_context.Entry(fullEndUserSecurities).Property(x => x.HashedPassword).IsModified = true;
+                    await _context.SaveChangesAsync();
+                    return Ok("User's password updated!");
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.Log(LogLevel.Error, $"Exception thrown in runtiome - {e.Message}");
+                throw;
+            }
         }
 
         // POST: api/Users
@@ -165,13 +233,13 @@ namespace gamespace_api.Controllers
                     var result = connection.Query<string>(sql);
                     var resultUsername = connection.Query<string>(sqlUsername);
                     //Console.WriteLine(result.First());
-                    
+
                     if (result.Any() || resultUsername.Any())
                     {
                         //Console.WriteLine(result.First());
                         return BadRequest("{\"result\" : \"user already exists!\"}");
                     }
-                    
+
                     else
                     {
                         //Console.WriteLine(result.First());
@@ -237,7 +305,7 @@ namespace gamespace_api.Controllers
 
         private bool EndUserExists(int id)
         {
-            
+
             try
             {
                 _logger.Log(LogLevel.Information, $"EndUserExists ()with id: ({id})");
@@ -252,7 +320,7 @@ namespace gamespace_api.Controllers
 
         [HttpPost]
         [Route("Coins")]
-        public ActionResult<string> UpdateCoins([FromBody]UserCoinsDto request)
+        public ActionResult<string> UpdateCoins([FromBody] UserCoinsDto request)
         {
             if (HakerzyLib.Core.Utils.IsAnyNullOrEmpty(request))
             {
@@ -300,7 +368,7 @@ namespace gamespace_api.Controllers
                     return BadRequest(Message.ToJson("user securities doesnt exist!"));
                 }
                 PasswordManager pm = new();
-                
+
                 if (pm.IsPassowrdValid(request.Password, (int)userSecurities.Salt, userSecurities.HashedPassword) == false)
                 {
                     //logger error
