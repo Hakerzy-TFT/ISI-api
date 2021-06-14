@@ -53,7 +53,7 @@ namespace gamespace_api.Controllers
             return studioPage;
         }
         [HttpGet("studio-and-page")]
-        public ActionResult<EndUser> GetStudioAndPage()
+        public ActionResult<EndUser> GetStudioAndPage(string name)
         {
             try
             {
@@ -61,7 +61,7 @@ namespace gamespace_api.Controllers
 
                 
 
-                string sql = "EXEC gs_get_studio_page_and_studio";
+                string sql = "EXEC gs_get_studio_page_and_studio @studio_name='"+name+"'";
 
 
                 using (SqlConnection connection = new(_context.Database.GetConnectionString()))
