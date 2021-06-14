@@ -24,7 +24,7 @@ namespace gamespace_api.Authentication
                 new Claim(HakerzyLib.Security.JwtClaimTypes.uname, user.Name),
                 new Claim(HakerzyLib.Security.JwtClaimTypes.usurname, user.Surname),
                 new Claim(HakerzyLib.Security.JwtClaimTypes.ubirthday, user.DateOfBirth.ToString()),
-                new Claim(HakerzyLib.Security.JwtClaimTypes.utype, user.UserTypeId == 0 ? "admin" : "user" )
+                new Claim(HakerzyLib.Security.JwtClaimTypes.utype, user.UserTypeId == 0 ? "studio" : "user" )
             };
             Console.WriteLine(configuration["jwt:Secret"]);
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["jwt:Secret"]));
