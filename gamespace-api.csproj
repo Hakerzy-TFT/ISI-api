@@ -8,7 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="HakerzyLib.csproj" />
+    <Compile Remove="gamespace-tests\**" />
+    <Content Remove="gamespace-tests\**" />
+    <EmbeddedResource Remove="gamespace-tests\**" />
+    <None Remove="gamespace-tests\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,9 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="HakerzyLib">
-      <HintPath>C:\Users\piotr\source\repos\HakerzyLib\bin\Debug\net5.0\HakerzyLib.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\HakerzyLib\HakerzyLib.csproj" />
   </ItemGroup>
 
 

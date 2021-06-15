@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.31005.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "gamespace-api", "gamespace-api.csproj", "{2F68DC49-082D-45EC-A93E-F26172339389}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HakerzyLib", "..\HakerzyLib\HakerzyLib.csproj", "{303698A7-9532-4B44-9E2B-96FDEBD7D33A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gamespace-tests", "..\gamespace-tests\gamespace-tests.csproj", "{A04A1C84-A761-4D0B-9DB0-FD8798871F71}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{2F68DC49-082D-45EC-A93E-F26172339389}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F68DC49-082D-45EC-A93E-F26172339389}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F68DC49-082D-45EC-A93E-F26172339389}.Release|Any CPU.Build.0 = Release|Any CPU
+		{303698A7-9532-4B44-9E2B-96FDEBD7D33A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{303698A7-9532-4B44-9E2B-96FDEBD7D33A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{303698A7-9532-4B44-9E2B-96FDEBD7D33A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{303698A7-9532-4B44-9E2B-96FDEBD7D33A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A04A1C84-A761-4D0B-9DB0-FD8798871F71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A04A1C84-A761-4D0B-9DB0-FD8798871F71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A04A1C84-A761-4D0B-9DB0-FD8798871F71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A04A1C84-A761-4D0B-9DB0-FD8798871F71}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
