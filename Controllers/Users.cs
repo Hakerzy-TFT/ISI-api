@@ -37,6 +37,11 @@ namespace gamespace_api.Controllers
             _logger = logger;
         }
 
+        public Users(alvorContext context)
+        {
+            _context = context;
+        }
+
         // GET: api/Users
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EndUser>>> GetEndUsers()
