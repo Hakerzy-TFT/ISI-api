@@ -5,11 +5,11 @@ using System.Collections.Generic;
 
 namespace gamespace_api.Models
 {
-    public partial class GamePage
+    public partial class StudioPage
     {
-        public GamePage()
+        public StudioPage()
         {
-            Games = new HashSet<Game>();
+            Studios = new HashSet<Studio>();
         }
 
         public int Id { get; set; }
@@ -25,6 +25,6 @@ namespace gamespace_api.Models
         public string ButtonColor { get; set; }
         public string FontColor { get; set; }
 
-        public virtual ICollection<Game> Games { get; set; }
+        public virtual ICollection<Studio> Studios { get; set; }
     }
 }

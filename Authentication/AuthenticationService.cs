@@ -17,15 +17,16 @@ namespace gamespace_api.Authentication
         {
             var claims = new List<Claim>
             {
+                new Claim(JwtRegisteredClaimNames.GivenName, user.Username),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(HakerzyLib.Security.JwtClaimTypes.uid, user.Id.ToString()),
                 new Claim(HakerzyLib.Security.JwtClaimTypes.uname, user.Name),
                 new Claim(HakerzyLib.Security.JwtClaimTypes.usurname, user.Surname),
                 new Claim(HakerzyLib.Security.JwtClaimTypes.ubirthday, user.DateOfBirth.ToString()),
-                new Claim(HakerzyLib.Security.JwtClaimTypes.utype, user.UserTypeId == 0 ? "admin" : "user" )
+                new Claim(HakerzyLib.Security.JwtClaimTypes.utype, user.UserTypeId == 0 ? "studio" : "user" )
             };
-            Console.WriteLine(configuration["jwt:Secret"]);
+            //Console.WriteLine(configuration["jwt:Secret"]);
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["jwt:Secret"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var expires = DateTime.Now.AddDays(Convert.ToDouble(configuration["jwt:ExpireDays"]));
